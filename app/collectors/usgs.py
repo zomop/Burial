@@ -15,9 +15,10 @@ def fetch_earthquakes() -> list[EarthquakeEvent]:
             request = Request(settings.feed_url, headers={"User-Agent": "BURIAL/0.1.0"})
             with urlopen(request, timeout=settings.request_timeout_seconds) as response:
                 payload = json.load(response)
-            events = [_parse_feature(item) for item in payload.get("features", [])]
+            events = [_parse_feature(item) for item in _feature_items(payload)]
+            events = [event for event in events if event is not None]
             log.info("collection_success", extra={"event_count": len(events), "attempt": attempt})
-            return [event for event in events if event is not None]
+            return events
         except (OSError, ValueError, HTTPError, URLError) as exc:
             last_error = exc
             log.warning("collection_failure", extra={"attempt": attempt, "error": str(exc)[:200]})
@@ -34,6 +35,15 @@ def _parse_feature(item: dict) -> EarthquakeEvent | None:
     occurred = _parse_timestamp(timestamp)
     return EarthquakeEvent("usgs", str(item.get("id") or ""), props.get("mag"), coords[2] if len(coords) > 2 else None,
         coords[1], coords[0], props.get("place") or "Unknown", occurred, props.get("url"))
+
+
+def _feature_items(payload: object) -> list[object]:
+    if not isinstance(payload, dict):
+        raise ValueError("USGS response must be a JSON object")
+    features = payload.get("features", [])
+    if not isinstance(features, list):
+        raise ValueError("USGS response features must be a list")
+    return features
 
 
 def _parse_timestamp(value: object) -> datetime | None:
