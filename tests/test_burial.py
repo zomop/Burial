@@ -39,4 +39,19 @@ class BurialTests(unittest.TestCase):
             Settings(retry_attempts=0)
         with self.assertRaisesRegex(ValueError, "alert_magnitude_threshold"):
             Settings(alert_magnitude_threshold=11)
+
+    def test_usgs_parser_skips_invalid_records(self):
+        from app.collectors.usgs import _parse_feature
+        self.assertIsNone(_parse_feature("not-an-object"))
+        self.assertIsNone(_parse_feature({"geometry": {"coordinates": [1]}}))
+
+    def test_usgs_parser_keeps_event_with_invalid_timestamp_for_validation(self):
+        from app.collectors.usgs import _parse_feature
+        event = _parse_feature({
+            "id": "evt-1",
+            "properties": {"mag": 4.2, "time": "invalid", "place": "Test"},
+            "geometry": {"coordinates": [2, 1, 10]},
+        })
+        self.assertIsNotNone(event)
+        self.assertIsNone(event.occurred_at)
 if __name__ == "__main__": unittest.main()
