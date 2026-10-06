@@ -25,10 +25,21 @@ def fetch_earthquakes() -> list[EarthquakeEvent]:
     raise RuntimeError(f"USGS collection failed after {settings.retry_attempts} attempts: {last_error}")
 
 def _parse_feature(item: dict) -> EarthquakeEvent | None:
+    if not isinstance(item, dict):
+        return None
     props, geometry = item.get("properties") or {}, item.get("geometry") or {}
     coords = geometry.get("coordinates") or []
-    if len(coords) < 2: return None
-    timestamp = props.get("time")
-    occurred = datetime.fromtimestamp(timestamp / 1000, tz=timezone.utc) if timestamp is not None else None
+    if not isinstance(coords, (list, tuple)) or len(coords) < 2: return None
+    timestamp = props.get("time") if isinstance(props, dict) else None
+    occurred = _parse_timestamp(timestamp)
     return EarthquakeEvent("usgs", str(item.get("id") or ""), props.get("mag"), coords[2] if len(coords) > 2 else None,
         coords[1], coords[0], props.get("place") or "Unknown", occurred, props.get("url"))
+
+
+def _parse_timestamp(value: object) -> datetime | None:
+    try:
+        if value is None:
+            return None
+        return datetime.fromtimestamp(float(value) / 1000, tz=timezone.utc)
+    except (TypeError, ValueError, OverflowError, OSError):
+        return None
