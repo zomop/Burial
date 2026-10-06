@@ -30,4 +30,13 @@ class BurialTests(unittest.TestCase):
     def test_health_has_database(self):
         from app.monitoring.health import health_status
         self.assertEqual(health_status()["database"],"connected")
+
+    def test_invalid_settings_are_rejected(self):
+        from app.config import Settings
+        with self.assertRaisesRegex(ValueError, "poll_interval_seconds"):
+            Settings(poll_interval_seconds=0)
+        with self.assertRaisesRegex(ValueError, "retry_attempts"):
+            Settings(retry_attempts=0)
+        with self.assertRaisesRegex(ValueError, "alert_magnitude_threshold"):
+            Settings(alert_magnitude_threshold=11)
 if __name__ == "__main__": unittest.main()
