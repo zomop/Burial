@@ -15,4 +15,16 @@ class Settings:
     database_path: Path = Path(os.getenv("DATABASE_PATH", "data/burial.db"))
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
 
+    def __post_init__(self) -> None:
+        if self.poll_interval_seconds <= 0:
+            raise ValueError("poll_interval_seconds must be positive")
+        if self.request_timeout_seconds <= 0:
+            raise ValueError("request_timeout_seconds must be positive")
+        if self.retry_attempts < 1:
+            raise ValueError("retry_attempts must be at least 1")
+        if self.retry_backoff_seconds < 0:
+            raise ValueError("retry_backoff_seconds cannot be negative")
+        if not 0 <= self.alert_magnitude_threshold <= 10:
+            raise ValueError("alert_magnitude_threshold must be between 0 and 10")
+
 settings = Settings()
