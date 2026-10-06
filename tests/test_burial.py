@@ -1,4 +1,4 @@
-import os, tempfile, unittest
+import os, sqlite3, tempfile, unittest
 from datetime import datetime, timezone
 from pathlib import Path
 class BurialTests(unittest.TestCase):
@@ -61,4 +61,10 @@ class BurialTests(unittest.TestCase):
             _feature_items([])
         with self.assertRaisesRegex(ValueError, "features must be a list"):
             _feature_items({"features": {}})
+
+    def test_sqlite_enforces_alert_event_reference(self):
+        from app.database.sqlite import get_connection
+        with self.assertRaises(sqlite3.IntegrityError):
+            with get_connection() as db:
+                db.execute("INSERT INTO alerts(event_id, channel, status, created_at) VALUES (?,?,?,?)", (999, "discord", "pending", "now"))
 if __name__ == "__main__": unittest.main()
