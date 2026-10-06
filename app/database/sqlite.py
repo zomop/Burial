@@ -24,4 +24,6 @@ def initialize_database() -> None:
         CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY AUTOINCREMENT, source TEXT NOT NULL, source_event_id TEXT NOT NULL, event_type TEXT NOT NULL, magnitude REAL, depth_km REAL, latitude REAL NOT NULL, longitude REAL NOT NULL, location TEXT NOT NULL, occurred_at TEXT, severity TEXT NOT NULL, source_url TEXT, created_at TEXT NOT NULL, UNIQUE(source, source_event_id));
         CREATE TABLE IF NOT EXISTS alerts (id INTEGER PRIMARY KEY AUTOINCREMENT, event_id INTEGER NOT NULL REFERENCES events(id), channel TEXT NOT NULL, status TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0, sent_at TEXT, error TEXT, created_at TEXT NOT NULL, UNIQUE(event_id, channel));
         CREATE TABLE IF NOT EXISTS health (key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL);
+        CREATE INDEX IF NOT EXISTS idx_events_occurred_at ON events(occurred_at);
+        CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
         """)
