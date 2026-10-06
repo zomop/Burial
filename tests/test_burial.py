@@ -67,4 +67,11 @@ class BurialTests(unittest.TestCase):
         with self.assertRaises(sqlite3.IntegrityError):
             with get_connection() as db:
                 db.execute("INSERT INTO alerts(event_id, channel, status, created_at) VALUES (?,?,?,?)", (999, "discord", "pending", "now"))
+
+    def test_sqlite_creates_operational_indexes(self):
+        from app.database.sqlite import get_connection
+        with get_connection() as db:
+            indexes = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='index'")}
+        self.assertIn("idx_events_occurred_at", indexes)
+        self.assertIn("idx_alerts_status", indexes)
 if __name__ == "__main__": unittest.main()
