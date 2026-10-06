@@ -54,4 +54,11 @@ class BurialTests(unittest.TestCase):
         })
         self.assertIsNotNone(event)
         self.assertIsNone(event.occurred_at)
+
+    def test_usgs_payload_requires_feature_list(self):
+        from app.collectors.usgs import _feature_items
+        with self.assertRaisesRegex(ValueError, "JSON object"):
+            _feature_items([])
+        with self.assertRaisesRegex(ValueError, "features must be a list"):
+            _feature_items({"features": {}})
 if __name__ == "__main__": unittest.main()
