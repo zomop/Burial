@@ -7,6 +7,12 @@ services:
       - .env
     environment:
       DATABASE_PATH: /burial/data/burial.db
+    healthcheck:
+      test: ["CMD", "python", "main.py", "health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     volumes:
       - ./data:/burial/data
       - ./logs:/burial/logs
