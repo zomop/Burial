@@ -1,4 +1,4 @@
-import os, sqlite3, tempfile, unittest
+import os, sqlite3, subprocess, sys, tempfile, unittest
 from datetime import datetime, timezone
 from pathlib import Path
 class BurialTests(unittest.TestCase):
@@ -74,4 +74,8 @@ class BurialTests(unittest.TestCase):
             indexes = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='index'")}
         self.assertIn("idx_events_occurred_at", indexes)
         self.assertIn("idx_alerts_status", indexes)
+
+    def test_cli_exposes_version(self):
+        result = subprocess.run([sys.executable, "main.py", "--version"], capture_output=True, text=True, check=True)
+        self.assertEqual(result.stdout.strip(), "BURIAL 0.1.0")
 if __name__ == "__main__": unittest.main()
