@@ -31,6 +31,13 @@ class BurialTests(unittest.TestCase):
         from app.monitoring.health import health_status
         self.assertEqual(health_status()["database"],"connected")
 
+    def test_health_includes_collection_metadata(self):
+        from app.monitoring.health import health_status
+        status = health_status(last_collection="2026-10-08T00:00:00+00:00", collector="usgs")
+        self.assertEqual(status["collector"], "usgs")
+        self.assertEqual(status["last_successful_collection"], "2026-10-08T00:00:00+00:00")
+        self.assertIn("checked_at", status)
+
     def test_invalid_settings_are_rejected(self):
         from app.config import Settings
         with self.assertRaisesRegex(ValueError, "poll_interval_seconds"):
