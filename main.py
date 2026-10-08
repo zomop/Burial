@@ -6,8 +6,11 @@ from app.core.worker import run, process_cycle
 from app.database.sqlite import initialize_database
 from app.monitoring.health import health_status
 
+VERSION = "0.1.0"
+
 def main():
     parser=argparse.ArgumentParser(description="BURIAL emergency event monitor")
+    parser.add_argument("--version", action="version", version=f"BURIAL {VERSION}")
     parser.add_argument("command", choices=("run","once","health"), nargs="?", default="run")
     args=parser.parse_args(); configure_logging(settings.log_level); initialize_database()
     if args.command=="run": run()
