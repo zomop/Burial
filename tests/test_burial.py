@@ -21,6 +21,12 @@ class BurialTests(unittest.TestCase):
         event = normalize_earthquake(self.event(occurred_at=datetime(2026, 1, 1), source_url="  https://example  "))
         self.assertEqual(event.occurred_at.tzinfo, timezone.utc)
         self.assertEqual(event.source_url, "https://example")
+
+    def test_discord_alert_reports_missing_webhook(self):
+        from app.alerts.discord import send_alert
+        success, error = send_alert({"magnitude": 5.0, "location": "Test", "occurred_at": "now", "id": 1})
+        self.assertFalse(success)
+        self.assertIn("not configured", error)
     def test_malformed_numeric_input_is_rejected(self):
         from app.collectors.validation import validate_earthquake
         errors=validate_earthquake(self.event(magnitude="not-a-number", latitude="bad"))
