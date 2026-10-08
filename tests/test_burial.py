@@ -15,6 +15,12 @@ class BurialTests(unittest.TestCase):
         from app.collectors.validation import validate_earthquake
         from app.collectors.normalization import normalize_earthquake
         e=self.event(); self.assertEqual(validate_earthquake(e), []); n=normalize_earthquake(e); self.assertEqual(n.source,"usgs"); self.assertEqual(n.location,"Test place")
+
+    def test_normalization_assigns_utc_to_naive_timestamp(self):
+        from app.collectors.normalization import normalize_earthquake
+        event = normalize_earthquake(self.event(occurred_at=datetime(2026, 1, 1), source_url="  https://example  "))
+        self.assertEqual(event.occurred_at.tzinfo, timezone.utc)
+        self.assertEqual(event.source_url, "https://example")
     def test_malformed_numeric_input_is_rejected(self):
         from app.collectors.validation import validate_earthquake
         errors=validate_earthquake(self.event(magnitude="not-a-number", latitude="bad"))
