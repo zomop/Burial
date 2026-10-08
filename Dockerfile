@@ -7,4 +7,5 @@ COPY main.py .
 RUN useradd --create-home burial && mkdir -p data logs && chown -R burial:burial /burial
 USER burial
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["python", "main.py", "health"]
 CMD ["python", "main.py", "run"]
