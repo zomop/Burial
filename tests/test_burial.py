@@ -74,6 +74,11 @@ class BurialTests(unittest.TestCase):
         self.assertIsNotNone(event)
         self.assertIsNone(event.occurred_at)
 
+    def test_usgs_parser_converts_epoch_milliseconds_to_utc(self):
+        from app.collectors.usgs import _parse_timestamp
+        parsed = _parse_timestamp(0)
+        self.assertEqual(parsed, datetime(1970, 1, 1, tzinfo=timezone.utc))
+
     def test_usgs_payload_requires_feature_list(self):
         from app.collectors.usgs import _feature_items
         with self.assertRaisesRegex(ValueError, "JSON object"):
