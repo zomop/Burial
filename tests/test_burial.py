@@ -103,4 +103,9 @@ class BurialTests(unittest.TestCase):
         self.assertEqual(self.event(magnitude=5.0).severity, "moderate")
         self.assertEqual(self.event(magnitude=6.0).severity, "high")
         self.assertEqual(self.event(magnitude=7.0).severity, "critical")
+
+    def test_validator_accepts_inclusive_geospatial_boundaries(self):
+        from app.collectors.validation import validate_earthquake
+        self.assertEqual(validate_earthquake(self.event(magnitude=-2, latitude=-90, longitude=-180)), [])
+        self.assertEqual(validate_earthquake(self.event(magnitude=10, latitude=90, longitude=180)), [])
 if __name__ == "__main__": unittest.main()
