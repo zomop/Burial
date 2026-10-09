@@ -59,6 +59,13 @@ class BurialTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "alert_magnitude_threshold"):
             Settings(alert_magnitude_threshold=11)
 
+    def test_boolean_settings_are_rejected(self):
+        from app.config import Settings
+        for field in ("poll_interval_seconds", "request_timeout_seconds", "retry_attempts", "retry_backoff_seconds", "alert_magnitude_threshold"):
+            with self.subTest(field=field):
+                with self.assertRaises(ValueError):
+                    Settings(**{field: True})
+
     def test_usgs_parser_skips_invalid_records(self):
         from app.collectors.usgs import _parse_feature
         self.assertIsNone(_parse_feature("not-an-object"))
