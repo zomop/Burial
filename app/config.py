@@ -16,15 +16,15 @@ class Settings:
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
 
     def __post_init__(self) -> None:
-        if self.poll_interval_seconds <= 0:
+        if isinstance(self.poll_interval_seconds, bool) or self.poll_interval_seconds <= 0:
             raise ValueError("poll_interval_seconds must be positive")
-        if self.request_timeout_seconds <= 0:
+        if isinstance(self.request_timeout_seconds, bool) or self.request_timeout_seconds <= 0:
             raise ValueError("request_timeout_seconds must be positive")
-        if self.retry_attempts < 1:
+        if isinstance(self.retry_attempts, bool) or self.retry_attempts < 1:
             raise ValueError("retry_attempts must be at least 1")
-        if self.retry_backoff_seconds < 0:
+        if isinstance(self.retry_backoff_seconds, bool) or self.retry_backoff_seconds < 0:
             raise ValueError("retry_backoff_seconds cannot be negative")
-        if not 0 <= self.alert_magnitude_threshold <= 10:
+        if isinstance(self.alert_magnitude_threshold, bool) or not 0 <= self.alert_magnitude_threshold <= 10:
             raise ValueError("alert_magnitude_threshold must be between 0 and 10")
 
 settings = Settings()
