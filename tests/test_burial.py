@@ -70,6 +70,8 @@ class BurialTests(unittest.TestCase):
         from app.collectors.usgs import _parse_feature
         self.assertIsNone(_parse_feature("not-an-object"))
         self.assertIsNone(_parse_feature({"geometry": {"coordinates": [1]}}))
+        self.assertIsNone(_parse_feature({"properties": "bad", "geometry": {}}))
+        self.assertIsNone(_parse_feature({"properties": {}, "geometry": "bad"}))
 
     def test_usgs_parser_keeps_event_with_invalid_timestamp_for_validation(self):
         from app.collectors.usgs import _parse_feature
