@@ -108,4 +108,10 @@ class BurialTests(unittest.TestCase):
         from app.collectors.validation import validate_earthquake
         self.assertEqual(validate_earthquake(self.event(magnitude=-2, latitude=-90, longitude=-180)), [])
         self.assertEqual(validate_earthquake(self.event(magnitude=10, latitude=90, longitude=180)), [])
+
+    def test_validator_rejects_boolean_measurements(self):
+        from app.collectors.validation import validate_earthquake
+        errors = validate_earthquake(self.event(magnitude=True, latitude=False))
+        self.assertIn("missing or non-finite magnitude", errors)
+        self.assertIn("latitude outside valid range", errors)
 if __name__ == "__main__": unittest.main()
