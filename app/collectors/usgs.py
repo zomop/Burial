@@ -28,7 +28,10 @@ def fetch_earthquakes() -> list[EarthquakeEvent]:
 def _parse_feature(item: dict) -> EarthquakeEvent | None:
     if not isinstance(item, dict):
         return None
-    props, geometry = item.get("properties") or {}, item.get("geometry") or {}
+    props = item.get("properties") or {}
+    geometry = item.get("geometry") or {}
+    if not isinstance(props, dict) or not isinstance(geometry, dict):
+        return None
     coords = geometry.get("coordinates") or []
     if not isinstance(coords, (list, tuple)) or len(coords) < 2: return None
     timestamp = props.get("time") if isinstance(props, dict) else None
