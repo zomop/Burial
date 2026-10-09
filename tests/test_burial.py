@@ -97,4 +97,10 @@ class BurialTests(unittest.TestCase):
     def test_cli_exposes_version(self):
         result = subprocess.run([sys.executable, "main.py", "--version"], capture_output=True, text=True, check=True)
         self.assertEqual(result.stdout.strip(), "BURIAL 0.1.0")
+
+    def test_event_severity_boundaries(self):
+        self.assertEqual(self.event(magnitude=4.9).severity, "low")
+        self.assertEqual(self.event(magnitude=5.0).severity, "moderate")
+        self.assertEqual(self.event(magnitude=6.0).severity, "high")
+        self.assertEqual(self.event(magnitude=7.0).severity, "critical")
 if __name__ == "__main__": unittest.main()
