@@ -3,6 +3,8 @@ from math import isfinite
 from .earthquake import EarthquakeEvent
 
 def _finite_number(value: object) -> bool:
+    if isinstance(value, bool):
+        return False
     try:
         return isfinite(float(value))
     except (TypeError, ValueError):
